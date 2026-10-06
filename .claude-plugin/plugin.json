@@ -1,13 +1,13 @@
 {
-  "name": "win-notify",
-  "displayName": "Win Notify",
-  "version": "1.2.0",
-  "description": "Windows toast plus a distinct sound for each Claude Code event (task done, question, plan ready, permission needed, error), with a /win-notify:notify on|off|mute switch. Claude Code on Windows only.",
+  "name": "code-chime",
+  "displayName": "Code Chime",
+  "version": "2.0.0",
+  "description": "Desktop notifications with a distinct sound for each Claude Code event: task done, question, plan ready, permission needed, error. Works in the terminal and the Claude Code VS Code extension, on macOS, Windows (including WSL) and Linux.",
   "author": {
     "name": "Deepak Thomas"
   },
-  "homepage": "https://github.com/Daniel-Deepak-Dev/win-notify",
-  "repository": "https://github.com/Daniel-Deepak-Dev/win-notify",
+  "homepage": "https://github.com/Daniel-Deepak-Dev/code-chime",
+  "repository": "https://github.com/Daniel-Deepak-Dev/code-chime",
   "license": "MIT",
-  "keywords": ["windows", "notifications", "toast", "sound", "hooks"]
+  "keywords": ["notifications", "sound", "macos", "linux", "windows", "wsl", "vscode", "hooks"]
 }

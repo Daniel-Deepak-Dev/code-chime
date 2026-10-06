@@ -1,16 +1,16 @@
 {
-  "name": "win-notify",
+  "name": "code-chime",
   "owner": {
     "name": "Deepak Thomas"
   },
   "metadata": {
-    "description": "Windows notifications for Claude Code: a toast and a distinct sound per event."
+    "description": "Desktop notifications with a distinct sound per Claude Code event, on macOS, Windows and Linux."
   },
   "plugins": [
     {
-      "name": "win-notify",
+      "name": "code-chime",
       "source": "./",
-      "description": "Windows toast plus a distinct sound for each Claude Code event, with a /win-notify:notify on|off|mute switch.",
+      "description": "Desktop notifications with a distinct sound for each Claude Code event. Works in the terminal and the Claude Code VS Code extension, on macOS, Windows (including WSL) and Linux.",
       "author": {
         "name": "Deepak Thomas"
       },
