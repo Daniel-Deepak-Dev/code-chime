@@ -2,7 +2,7 @@
 
 Windows notifications for [Claude Code](https://claude.com/claude-code). You get a toast plus a different sound for each kind of event, so you can tell what happened without looking.
 
-Works with the terminal CLI and the VS Code extension, in every project.
+Works with the Claude Code terminal CLI and the Claude Code VS Code extension, in every project. **Windows only, Claude Code only.** In other Claude apps (claude.ai chat, Cowork) and on macOS or Linux the plugin does nothing useful.
 
 | Event | Toast | Sound (`C:\Windows\Media`) |
 | --- | --- | --- |
@@ -76,6 +76,15 @@ The keys are `Finished`, `Question`, `Plan`, `NeedsYou` and `Error`. The file li
 - A plan or question also triggers a later `Notification` ("Claude needs your permission to use ExitPlanMode"), about 20 seconds after the first alert. The script skips that repeat.
 - `skills/notify` is the `/win-notify:notify` command. It runs `scripts/notify-switch.ps1`.
 - Headless `claude -p` runs can exit before an async hook finishes, so expect no toast there.
+
+## What it runs, reads and stores
+
+Everything stays on your PC. The plugin makes no network calls and sends no data anywhere.
+
+- **Runs:** `powershell.exe` with `scripts/notify.ps1` on the four hook events above, and with `scripts/notify-switch.ps1` when you use `/win-notify:notify`. The `/win-notify:notify` skill pre-approves only that one switch command.
+- **Reads:** the event JSON that Claude Code passes to the hook. The toast shows the project folder name and Claude's own notification text, such as "Claude needs your permission to use Bash". It also reads `notify-config.json` and the `.wav` files.
+- **Writes:** `notify-config.json` (on/off state and sound overrides) and, only when something fails, `notify-errors.log`. Both are in `%USERPROFILE%\.claude` (or `CLAUDE_CONFIG_DIR` if set).
+- **Uses:** the BurntToast module, which you install yourself. The plugin never installs anything.
 
 ## Troubleshooting
 
