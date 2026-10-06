@@ -15,9 +15,6 @@ $sounds = @{
 $claudeDir     = if ($env:CLAUDE_CONFIG_DIR) { $env:CLAUDE_CONFIG_DIR } else { Join-Path $env:USERPROFILE ".claude" }
 $configPath    = Join-Path $claudeDir "notify-config.json"
 $errorLog      = Join-Path $claudeDir "notify-errors.log"
-# ExitPlanMode (and maybe AskUserQuestion) also raise a permission prompt.
-# The PreToolUse alert touches this file; a Notification right after it stays quiet.
-$preToolMarker = Join-Path $claudeDir "notify-last-pretool.txt"
 
 function Write-NotifyError($err) {
     try { "$(Get-Date -Format s)  $err" | Out-File -Append -Encoding utf8 $errorLog } catch {}
@@ -37,15 +34,10 @@ try {
     $hookEvent = $hookInput.hook_event_name
     $project   = if ($hookInput.cwd) { Split-Path $hookInput.cwd -Leaf } else { "Claude Code" }
 
-    if ($hookEvent -eq "PreToolUse") {
-        Set-Content -Path $preToolMarker -Value (Get-Date -Format o)
-    }
-    if ($hookEvent -eq "Notification") {
-        # Both hooks start at almost the same moment; give PreToolUse time to write its marker.
-        Start-Sleep -Milliseconds 1500
-        if ((Test-Path $preToolMarker) -and ((Get-Date) - (Get-Item $preToolMarker).LastWriteTime).TotalSeconds -lt 5) {
-            exit 0
-        }
+    # A plan or question also raises "Claude needs your permission to use ExitPlanMode",
+    # some 20+ seconds after the PreToolUse alert already went out. Skip that repeat.
+    if ($hookEvent -eq "Notification" -and "$($hookInput.message)" -match 'ExitPlanMode|AskUserQuestion') {
+        exit 0
     }
 
     switch ($hookEvent) {

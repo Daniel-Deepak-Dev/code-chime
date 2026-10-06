@@ -41,12 +41,14 @@ Works with the terminal CLI and the VS Code extension, in every project.
 ## Turn it on and off
 
 ```
-/notify off       no toasts, no sounds
-/notify on        back on
-/notify mute      toasts only, no sound
-/notify unmute    sounds back
-/notify status    show the current state
+/win-notify:notify off       no toasts, no sounds
+/win-notify:notify on        back on
+/win-notify:notify mute      toasts only, no sound
+/win-notify:notify unmute    sounds back
+/win-notify:notify status    show the current state
 ```
+
+You can also just tell Claude "turn off notifications" or "mute Claude sounds".
 
 The switch applies to every project and every open session. It takes effect on the next notification.
 
@@ -71,13 +73,14 @@ The keys are `Finished`, `Question`, `Plan`, `NeedsYou` and `Error`. The file li
 
 - `hooks/hooks.json` registers async command hooks on four events: `Stop`, `StopFailure`, `Notification` (`permission_prompt|elicitation_dialog`) and `PreToolUse` (`AskUserQuestion|ExitPlanMode`).
 - Each hook runs `scripts/notify.ps1`. It shows a silent BurntToast toast and plays the event's `.wav` with `System.Media.SoundPlayer`. The hooks are async, so Claude never waits for them.
-- Approving a plan fires both `PreToolUse` and `Notification`. The script plays only the first of the two.
-- `skills/notify` is the `/notify` command. It runs `scripts/notify-switch.ps1`.
+- A plan or question also triggers a later `Notification` ("Claude needs your permission to use ExitPlanMode"), about 20 seconds after the first alert. The script skips that repeat.
+- `skills/notify` is the `/win-notify:notify` command. It runs `scripts/notify-switch.ps1`.
+- Headless `claude -p` runs can exit before an async hook finishes, so expect no toast there.
 
 ## Troubleshooting
 
 - **Nothing happens.** Look in `%USERPROFILE%\.claude\notify-errors.log`. The script writes every failure there, because async hooks have no visible output.
-- **The toast appears only in the notification panel.** Windows Do Not Disturb is on. Sounds still play. Use `/notify mute` for quiet time.
+- **The toast appears only in the notification panel.** Windows Do Not Disturb is on. Sounds still play. Use `/win-notify:notify mute` for quiet time.
 - **Writing your own hook commands on Windows.** Claude Code runs them through Git Bash. A bare `C:\path\to\script.ps1` loses its backslashes there. Use forward slashes or quote the path.
 
 ## Uninstall

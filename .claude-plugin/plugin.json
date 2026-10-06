@@ -1,7 +1,7 @@
 {
   "name": "win-notify",
-  "version": "1.0.0",
-  "description": "Windows toast plus a distinct sound for each Claude Code event (task done, question, plan ready, permission needed, error), with a /notify on|off|mute switch.",
+  "version": "1.1.0",
+  "description": "Windows toast plus a distinct sound for each Claude Code event (task done, question, plan ready, permission needed, error), with a /win-notify:notify on|off|mute switch.",
   "author": {
     "name": "Daniel-Deepak-Dev"
   },
