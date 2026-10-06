@@ -49,7 +49,7 @@ The switch applies to every project and every open session. It takes effect on t
 
 ## Change a sound
 
-Add a `sounds` block to `~/.claude/code-chime.json` (`%USERPROFILE%\.claude\code-chime.json` on Windows). A bare file name is looked up in your OS's sound folder above. A full path can point at any file your OS can play.
+Add a `sounds` block to `~/.config/code-chime/config.json` (`%USERPROFILE%\.config\code-chime\config.json` on Windows; inside WSL, the WSL home). A bare file name is looked up in your OS's sound folder above. A full path can point at any file your OS can play.
 
 ```json
 {
@@ -62,7 +62,7 @@ Add a `sounds` block to `~/.claude/code-chime.json` (`%USERPROFILE%\.claude\code
 }
 ```
 
-The keys are `Finished`, `Question`, `Plan`, `NeedsYou` and `Error`. The file lives outside the plugin folder, so plugin updates keep your settings. If you set `CLAUDE_CONFIG_DIR`, the file lives there instead.
+The keys are `Finished`, `Question`, `Plan`, `NeedsYou` and `Error`. The file lives outside the plugin folder, so plugin updates keep your settings. If you set `XDG_CONFIG_HOME`, the folder is `$XDG_CONFIG_HOME/code-chime` instead.
 
 ## How it works
 
@@ -79,8 +79,9 @@ The keys are `Finished`, `Question`, `Plan`, `NeedsYou` and `Error`. The file li
 Everything stays on your computer. The plugin makes no network calls and sends no data anywhere.
 
 - **Runs:** `bash` with `scripts/notify.sh` on the four hook events. That script runs only local programs: `powershell.exe` (Windows, WSL); `terminal-notifier` or `osascript`, and `afplay` (macOS); `notify-send` and a sound player (Linux). The `/code-chime:notify` command runs `scripts/notify-switch.sh`, and the skill pre-approves only that command.
-- **Reads:** the event JSON that Claude Code passes to the hook. The notification shows the project folder name and Claude's own notification text, such as "Claude needs your permission to use Bash". It also reads `code-chime.json` and the sound files.
-- **Writes:** `code-chime.json` (on/off state and sound overrides) and, only when something fails, `code-chime-errors.log`. Both are in `~/.claude`, or in `CLAUDE_CONFIG_DIR` if set.
+- **Reads:** the event JSON that Claude Code passes to the hook. The notification shows the project folder name and Claude's own notification text, such as "Claude needs your permission to use Bash". It also reads its own `config.json` and the sound files.
+- **Writes:** `config.json` (on/off state and sound overrides) and, only when something fails, `errors.log`. Both are in its own folder, `~/.config/code-chime` (or `$XDG_CONFIG_HOME/code-chime`).
+- **Never touches:** Claude Code's own config folder (`~/.claude`), credentials, tokens or environment secrets.
 - **Installs:** nothing.
 
 ## Limitations
@@ -92,7 +93,7 @@ Everything stays on your computer. The plugin makes no network calls and sends n
 
 ## Troubleshooting
 
-- **Nothing happens.** Look in `~/.claude/code-chime-errors.log`. The script writes every failure there, because async hooks have no visible output.
+- **Nothing happens.** Look in `~/.config/code-chime/errors.log`. The script writes every failure there, because async hooks have no visible output.
 - **Linux: notification but no sound.** Install `pulseaudio-utils` (for `paplay`) or `pipewire` tools (for `pw-play`), and `sound-theme-freedesktop`.
 - **Writing your own hook commands on Windows.** Claude Code runs them through Git Bash. A bare `C:\path\to\script.ps1` loses its backslashes there. Use forward slashes or quote the path.
 
@@ -102,7 +103,7 @@ Everything stays on your computer. The plugin makes no network calls and sends n
 /plugin uninstall code-chime@code-chime
 ```
 
-Then delete `~/.claude/code-chime.json` if you no longer want your settings.
+Then delete the `~/.config/code-chime` folder if you no longer want your settings.
 
 ## License
 

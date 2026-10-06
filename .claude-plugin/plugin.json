@@ -1,7 +1,7 @@
 {
   "name": "code-chime",
   "displayName": "Code Chime",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "description": "Desktop notifications with a distinct sound for each Claude Code event: task done, question, plan ready, permission needed, error. Works in the terminal and the Claude Code VS Code extension, on macOS, Windows (including WSL) and Linux.",
   "author": {
     "name": "Deepak Thomas"

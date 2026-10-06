@@ -5,9 +5,10 @@
 # Keep this bash 3.2 compatible (macOS /bin/bash): no associative arrays, no ${var,,}.
 
 SCRIPT_DIR=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
-CONFIG_DIR=${CLAUDE_CONFIG_DIR:-$HOME/.claude}
-CONFIG_FILE=$CONFIG_DIR/code-chime.json
-ERROR_LOG=$CONFIG_DIR/code-chime-errors.log
+# Own settings folder, so the plugin never touches Claude Code's config folder.
+CONFIG_DIR=${XDG_CONFIG_HOME:-$HOME/.config}/code-chime
+CONFIG_FILE=$CONFIG_DIR/config.json
+ERROR_LOG=$CONFIG_DIR/errors.log
 
 log_error() {
   mkdir -p "$CONFIG_DIR" 2>/dev/null
@@ -47,7 +48,7 @@ detect_os() {
   esac
 }
 
-# Built-in sound for an event key, per OS.
+# Built-in sound for an event, per OS.
 default_sound() {
   case "$1:$2" in
     windows:Finished|wsl:Finished) echo "tada.wav" ;;
@@ -147,30 +148,30 @@ PROJECT=${CWD##*[/\\]}
 
 case "$EVENT" in
   Stop)
-    TITLE="Claude finished"; BODY="Task done in $PROJECT"; KEY=Finished ;;
+    TITLE="Claude finished"; BODY="Task done in $PROJECT"; SOUND_ID=Finished ;;
   StopFailure)
     REASON=$(json_str error "$INPUT")
     [ -n "$REASON" ] || REASON=$(json_str error_details "$INPUT")
     [ -n "$REASON" ] || REASON=$(json_str error_type "$INPUT")
-    TITLE="Claude stopped"; BODY=${REASON:-"Turn ended by an error (usage limit?)"}; KEY=Error ;;
+    TITLE="Claude stopped"; BODY=${REASON:-"Turn ended by an error (usage limit?)"}; SOUND_ID=Error ;;
   PreToolUse)
     if [ "$TOOL" = ExitPlanMode ]; then
-      TITLE="Plan ready for review"; BODY="Approve or edit the plan in $PROJECT"; KEY=Plan
+      TITLE="Plan ready for review"; BODY="Approve or edit the plan in $PROJECT"; SOUND_ID=Plan
     else
-      TITLE="Claude has a question"; BODY="Waiting for your answer in $PROJECT"; KEY=Question
+      TITLE="Claude has a question"; BODY="Waiting for your answer in $PROJECT"; SOUND_ID=Question
     fi ;;
   *)
     # A plan or question also raises "Claude needs your permission to use ExitPlanMode",
     # some 20+ seconds after the PreToolUse alert already went out. Skip that repeat.
     case "$MESSAGE" in *ExitPlanMode*|*AskUserQuestion*) exit 0 ;; esac
-    TITLE="Claude needs you"; BODY=${MESSAGE:-"Needs your attention"}; KEY=NeedsYou ;;
+    TITLE="Claude needs you"; BODY=${MESSAGE:-"Needs your attention"}; SOUND_ID=NeedsYou ;;
 esac
 
 OS=$(detect_os)
 SOUND=""
 if [ "$PLAY_SOUND" = 1 ]; then
-  NAME=$(json_str "$KEY" "$CONFIG")
-  [ -n "$NAME" ] || NAME=$(default_sound "$OS" "$KEY")
+  NAME=$(json_str "$SOUND_ID" "$CONFIG")
+  [ -n "$NAME" ] || NAME=$(default_sound "$OS" "$SOUND_ID")
   [ -n "$NAME" ] && SOUND=$(sound_path "$OS" "$NAME")
 fi
 
