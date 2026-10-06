@@ -1,0 +1,16 @@
+{
+  "name": "win-notify",
+  "owner": {
+    "name": "Daniel-Deepak-Dev"
+  },
+  "metadata": {
+    "description": "Windows notifications for Claude Code: a toast and a distinct sound per event."
+  },
+  "plugins": [
+    {
+      "name": "win-notify",
+      "source": "./",
+      "description": "Windows toast plus a distinct sound for each Claude Code event, with a /notify on|off|mute switch."
+    }
+  ]
+}
