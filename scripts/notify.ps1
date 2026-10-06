@@ -24,7 +24,7 @@ try {
     $hookInput = [Console]::In.ReadToEnd() | ConvertFrom-Json
 
     # Switch set by notify-switch.ps1 (/notify). Missing or unreadable file = on, with sound.
-    $config = try { Get-Content $configPath -Raw | ConvertFrom-Json } catch { $null }
+    $config = try { Get-Content $configPath -Raw -ErrorAction Stop | ConvertFrom-Json } catch { $null }
     if ($config -and $config.enabled -eq $false) { exit 0 }
     $playSound = -not ($config -and $config.sound -eq $false)
     if ($config -and $config.sounds) {
